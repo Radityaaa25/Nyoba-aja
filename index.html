@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Maafkan Aku</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    html, body {
+      background: linear-gradient(135deg, #1a0033, #000);
+      overscroll-behavior-x: none;
+      overscroll-behavior-y: none;
+      overflow: hidden;
+      font-family: 'Arial', sans-serif;
+      height: 100vh;
+    }
+    
+    body {
+      width: 100vw;
+      height: 100vh;
+      text-align: center;
+      line-height: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+    }
+    
+    canvas {
+      width: 100dvmin;
+      aspect-ratio: 1;
+      z-index: 1;
+    }
+    
+    .message-container {
+      position: relative;
+      z-index: 100;
+      margin-bottom: 30px;
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    .message {
+      font-size: 2rem;
+      color: #fff;
+      text-shadow: 0 0 10px rgba(255, 105, 180, 0.7);
+      max-width: 80%;
+      margin: 0 auto;
+      background-color: rgba(0, 0, 0, 0.3);
+      padding: 20px;
+      border-radius: 15px;
+      border: 2px solid rgba(255, 105, 180, 0.5);
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+    
+    .hearts-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 1;
+    }
+    
+    .heart {
+      position: absolute;
+      fill: #ff3366;
+      opacity: 0;
+      animation: fall 6s linear infinite;
+    }
+    
+    @keyframes fall {
+      0% {
+        opacity: 1;
+        transform: translateY(-10%) scale(0);
+      }
+      25% {
+        opacity: 1;
+        transform: translateY(25%) scale(0.4) rotate(20deg);
+      }
+      50% {
+        opacity: 1;
+        transform: translateY(50%) scale(0.8) rotate(-15deg);
+      }
+      75% {
+        opacity: 0.8;
+        transform: translateY(75%) scale(0.6) rotate(15deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(100%) scale(0.3) rotate(-15deg);
+      }
+    }
+    
+    .bubbles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      pointer-events: none;
+    }
+    
+    .bubble {
+      position: absolute;
+      z-index: 2;
+      border-radius: 50%;
+    }
+    
+    @keyframes love-burst {
+      50%, 100% {
+        box-shadow: inset 0 0 0 0 rgb(255, 51, 102);
+        transform: translate(0, 0) scale(1);
+      }
+    }
+    
+    @keyframes love {
+      50% {
+        fill: rgb(255, 51, 102);
+        opacity: 1;
+      }
+    }
+    
+    .pulse {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 150px;
+      height: 150px;
+      z-index: 0;
+    }
+    
+    .big-heart {
+      width: 100%;
+      height: 100%;
+      background-color: transparent;
+      animation: pulse 1.5s ease infinite;
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+    
+    /* Generating 20 bubbles with different positions and animations */
+    .bubble:nth-child(1) {
+      top: 8%;
+      left: 60%;
+      height: 11vmin;
+      width: 11vmin;
+      animation: love-burst 3s infinite 0s;
+      box-shadow: inset 0 0 0 5.5vmin transparent;
+      transform: translate(0, 0.05em) scale(0);
+      transform-origin: center bottom;
+    }
+    
+    .bubble:nth-child(2) {
+      top: 83%;
+      left: 14%;
+      height: 20vmin;
+      width: 20vmin;
+      animation: love-burst 3s infinite 0.15s;
+      box-shadow: inset 0 0 0 10vmin transparent;
+      transform: translate(0, 0.75em) scale(0);
+      transform-origin: center bottom;
+    }
+    
+    /* Repeat for other bubbles with different positions and delays */
+    .bubble:nth-child(3) {
+      top: 25%;
+      left: 49%;
+      height: 4vmin;
+      width: 4vmin;
+      animation: love-burst 3s infinite 0.3s;
+      box-shadow: inset 0 0 0 2vmin transparent;
+      transform: translate(0, 0.5em) scale(0);
+      transform-origin: center bottom;
+    }
+    
+    /* Continue for all 20 bubbles */
+    .bubble:nth-child(4) {
+      top: 63%;
+      left: 93%;
+      height: 3vmin;
+      width: 3vmin;
+      animation: love-burst 3s infinite 0.45s;
+      box-shadow: inset 0 0 0 1.5vmin transparent;
+      transform: translate(0, 0.35em) scale(0);
+      transform-origin: center bottom;
+    }
+    
+    .bubble:nth-child(5) {
+      top: 7%;
+      left: 56%;
+      height: 18vmin;
+      width: 18vmin;
+      animation: love-burst 3s infinite 0.6s;
+      box-shadow: inset 0 0 0 9vmin transparent;
+      transform: translate(0, 0.3em) scale(0);
+      transform-origin: center bottom;
+    }
+    
+    /* Heart SVG inside each bubble */
+    .heart-svg {
+      fill: transparent;
+      opacity: 0;
+    }
+    
+    .bubble:nth-child(1) .heart-svg {
+      animation: love 3s forwards infinite 0s;
+      transform: scale(0.5) rotate(-4deg);
+    }
+    
+    .bubble:nth-child(2) .heart-svg {
+      animation: love 3s forwards infinite 0.15s;
+      transform: scale(0.5) rotate(22deg);
+    }
+    
+    .bubble:nth-child(3) .heart-svg {
+      animation: love 3s forwards infinite 0.3s;
+      transform: scale(0.5) rotate(-5deg);
+    }
+    
+    .bubble:nth-child(4) .heart-svg {
+      animation: love 3s forwards infinite 0.45s;
+      transform: scale(0.5) rotate(50deg);
+    }
+    
+    .bubble:nth-child(5) .heart-svg {
+      animation: love 3s forwards infinite 0.6s;
+      transform: scale(0.5) rotate(-29deg);
+    }
+    
+    /* Falling hearts animation */
+    .falling-hearts {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+    
+    .falling-heart {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: #ff3366;
+      transform: rotate(45deg);
+      opacity: 0;
+    }
+    
+    .falling-heart:before,
+    .falling-heart:after {
+      content: '';
+      width: 20px;
+      height: 20px;
+      background-color: #ff3366;
+      border-radius: 50%;
+      position: absolute;
+    }
+    
+    .falling-heart:before {
+      top: -10px;
+      left: 0;
+    }
+    
+    .falling-heart:after {
+      top: 0;
+      left: -10px;
+    }
+    
+    /* Button styles */
+    .forgive-btn {
+      margin-top: 30px;
+      padding: 12px 25px;
+      background: linear-gradient(45deg, #ff3366, #ff6699);
+      color: white;
+      border: none;
+      border-radius: 25px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      position: relative;
+      z-index: 100;
+      box-shadow: 0 5px 15px rgba(255, 51, 102, 0.4);
+      transition: all 0.3s;
+    }
+    
+    .forgive-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 7px 20px rgba(255, 51, 102, 0.6);
+    }
+    
+    /* Add more colors for variety */
+    .color1 { fill: #ff3366; }
+    .color2 { fill: #ff6699; }
+    .color3 { fill: #ff99cc; }
+    .color4 { fill: #ff66b2; }
+    .color5 { fill: #ff5c8a; }
+
+    /* Photo animation styles */
+    .photo-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      z-index: 50;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .photo-container.active {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .photo {
+      position: relative;
+      width: clamp(150px, 30vw, 300px);
+      height: clamp(150px, 30vw, 300px);
+      object-fit: cover;
+      border-radius: 15px;
+      border: 3px solid #ff3366;
+      box-shadow: 0 0 20px rgba(255, 51, 102, 0.6);
+      opacity: 0;
+      transform: scale(0.8) translate(0, 0) rotate(0deg);
+      transition: all 0.5s ease;
+      animation: none;
+    }
+
+    .photo.active {
+      opacity: 1;
+      transform: scale(1);
+      animation: floatPhoto 3s ease-in-out infinite;
+    }
+
+    @media (max-width: 768px) {
+      .photo-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        padding: 10px;
+      }
+      
+      .photo {
+        width: clamp(120px, 40vw, 200px);
+        height: clamp(120px, 40vw, 200px);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .photo-container {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @keyframes floatPhoto {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      25% { transform: translate(20px, -20px) rotate(5deg); }
+      50% { transform: translate(-20px, -40px) rotate(-5deg); }
+      75% { transform: translate(-30px, -20px) rotate(3deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="message-container">
+    <div class="message">Maafin yaaa, Janji ga ngatain lagi🫶🏻</div>
+  </div>
+  
+  <div class="pulse">
+    <svg class="big-heart" viewBox="0 0 32 32">
+      <path class="color1" d="M23.6 2c-3.363 0-6.258 2.736-7.599 5.594-1.342-2.858-4.237-5.594-7.601-5.594-4.637 0-8.4 3.764-8.4 8.401 0 9.433 9.516 11.906 16.001 21.232 6.13-9.268 15.999-12.1 15.999-21.232 0-4.637-3.763-8.401-8.4-8.401z"></path>
+    </svg>
+  </div>
+  
+  <button class="forgive-btn" id="forgiveBtn">diMaafin</button>
+  
+  <div class="bubbles">
+    <div class="bubble">
+      <svg class="heart-svg color1" viewBox="0 0 32 32">
+        <path d="M23.6 2c-3.363 0-6.258 2.736-7.599 5.594-1.342-2.858-4.237-5.594-7.601-5.594-4.637 0-8.4 3.764-8.4 8.401 0 9.433 9.516 11.906 16.001 21.232 6.13-9.268 15.999-12.1 15.999-21.232 0-4.637-3.763-8.401-8.4-8.401z"></path>
+      </svg>
+    </div>
+    <div class="bubble">
+      <svg class="heart-svg color2" viewBox="0 0 32 32">
+        <path d="M23.6 2c-3.363 0-6.258 2.736-7.599 5.594-1.342-2.858-4.237-5.594-7.601-5.594-4.637 0-8.4 3.764-8.4 8.401 0 9.433 9.516 11.906 16.001 21.232 6.13-9.268 15.999-12.1 15.999-21.232 0-4.637-3.763-8.401-8.4-8.401z"></path>
+      </svg>
+    </div>
+    <div class="bubble">
+      <svg class="heart-svg color3" viewBox="0 0 32 32">
+        <path d="M23.6 2c-3.363 0-6.258 2.736-7.599 5.594-1.342-2.858-4.237-5.594-7.601-5.594-4.637 0-8.4 3.764-8.4 8.401 0 9.433 9.516 11.906 16.001 21.232 6.13-9.268 15.999-12.1 15.999-21.232 0-4.637-3.763-8.401-8.4-8.401z"></path>
+      </svg>
+    </div>
+    <div class="bubble">
+      <svg class="heart-svg color4" viewBox="0 0 32 32">
+        <path d="M23.6 2c-3.363 0-6.258 2.736-7.599 5.594-1.342-2.858-4.237-5.594-7.601-5.594-4.637 0-8.4 3.764-8.4 8.401 0 9.433 9.516 11.906 16.001 21.232 6.13-9.268 15.999-12.1 15.999-21.232 0-4.637-3.763-8.401-8.4-8.401z"></path>
+      </svg>
+    </div>
+    <div class="bubble">
+      <svg class="heart-svg color5" viewBox="0 0 32 32">
+        <path d="M23.6 2c-3.363 0-6.258 2.736-7.599 5.594-1.342-2.858-4.237-5.594-7.601-5.594-4.637 0-8.4 3.764-8.4 8.401 0 9.433 9.516 11.906 16.001 21.232 6.13-9.268 15.999-12.1 15.999-21.232 0-4.637-3.763-8.401-8.4-8.401z"></path>
+      </svg>
+    </div>
+  </div>
+  
+  <div class="hearts-container" id="heartsContainer"></div>
+  
+  <div class="photo-container" id="photoContainer">
+    <!-- Foto akan ditambahkan melalui JavaScript -->
+  </div>
+
+  <audio id="bgMusic" loop>
+    <source src="bg.mp3" type="audio/mpeg">
+  </audio>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Auto play background music
+      const audio = document.getElementById('bgMusic');
+      audio.volume = 0.3;
+      
+      // Try to play audio on page load (may be blocked by browser policies)
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          // Auto-play was prevented - add a manual play button or use a different approach
+          console.log("Audio autoplay prevented by browser");
+        });
+      }
+      
+      // Create falling hearts
+      const heartsContainer = document.getElementById('heartsContainer');
+      
+      // Create more bubbles dynamically
+      const bubbles = document.querySelector('.bubbles');
+      for (let i = 0; i < 15; i++) {
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        
+        const heartSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        heartSvg.classList.add('heart-svg');
+        heartSvg.classList.add(`color${(i % 5) + 1}`);
+        heartSvg.setAttribute('viewBox', '0 0 32 32');
+        
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', 'M23.6 2c-3.363 0-6.258 2.736-7.599 5.594-1.342-2.858-4.237-5.594-7.601-5.594-4.637 0-8.4 3.764-8.4 8.401 0 9.433 9.516 11.906 16.001 21.232 6.13-9.268 15.999-12.1 15.999-21.232 0-4.637-3.763-8.401-8.4-8.401z');
+        
+        heartSvg.appendChild(path);
+        bubble.appendChild(heartSvg);
+        
+        // Set random position and animation delay
+        bubble.style.top = `${Math.random() * 80 + 10}%`;
+        bubble.style.left = `${Math.random() * 80 + 10}%`;
+        bubble.style.height = `${Math.random() * 15 + 5}vmin`;
+        bubble.style.width = bubble.style.height;
+        bubble.style.animation = `love-burst 3s infinite ${Math.random() * 3}s`;
+        
+        // Animation for heart SVG
+        heartSvg.style.animation = `love 3s forwards infinite ${Math.random() * 3}s`;
+        heartSvg.style.transform = `scale(0.5) rotate(${Math.random() * 60 - 30}deg)`;
+        
+        bubbles.appendChild(bubble);
+      }
+      
+      // Create falling hearts animation
+      function createFallingHeart() {
+        const heart = document.createElement('div');
+        heart.classList.add('heart');
+        
+        // Random position, size, color and animation duration
+        const size = Math.random() * 30 + 10;
+        const left = Math.random() * 100;
+        const animDuration = Math.random() * 3 + 2;
+        const colorClass = `color${Math.floor(Math.random() * 5) + 1}`;
+        
+        heart.innerHTML = `<svg viewBox="0 0 32 32" class="${colorClass}">
+          <path d="M23.6 2c-3.363 0-6.258 2.736-7.599 5.594-1.342-2.858-4.237-5.594-7.601-5.594-4.637 0-8.4 3.764-8.4 8.401 0 9.433 9.516 11.906 16.001 21.232 6.13-9.268 15.999-12.1 15.999-21.232 0-4.637-3.763-8.401-8.4-8.401z"></path>
+        </svg>`;
+        
+        heart.style.width = `${size}px`;
+        heart.style.height = `${size}px`;
+        heart.style.left = `${left}%`;
+        heart.style.top = '-50px';
+        heart.style.animation = `fall ${animDuration}s linear forwards`;
+        
+        heartsContainer.appendChild(heart);
+        
+        // Remove heart after animation completes
+        setTimeout(() => {
+          heart.remove();
+        }, animDuration * 1000);
+      }
+      
+      // Generate falling hearts periodically
+      setInterval(createFallingHeart, 300);
+      
+      // Button effect
+      const forgiveBtn = document.getElementById('forgiveBtn');
+      forgiveBtn.addEventListener('click', function() {
+        // Change message
+        document.querySelector('.message').textContent = 'Terima kasihh udah dimaafin🫰🏻';
+        
+        // Create heart burst effect
+        for (let i = 0; i < 30; i++) {
+          setTimeout(() => {
+            createFallingHeart();
+          }, i * 50);
+        }
+        
+        // Enable music if it wasn't playing
+        audio.play();
+        
+        // Make button disappear or change
+        this.textContent = "Love You Sealam Semesta🫶🏻🫰🏻";
+        this.style.background = "linear-gradient(45deg, #ff6699, #ff3366)";
+
+        // Show photo container
+        const photoContainer = document.getElementById('photoContainer');
+        photoContainer.classList.add('active');
+
+        // Create and animate photos
+        const photos = [
+          'photo1.JPG',
+          'photo2.JPG',
+          'photo3.JPG',
+          'photo4.JPG',
+          'photo5.JPG'
+        ];
+        photos.forEach((photo, index) => {
+          setTimeout(() => {
+            const img = document.createElement('img');
+            img.src = photo;
+            img.className = 'photo';
+            photoContainer.appendChild(img);
+
+            // Add a small delay before adding active class
+            setTimeout(() => {
+              img.classList.add('active');
+            }, 100);
+          }, index * 800);
+        });
+      });
+      
+      // Create initial hearts
+      for (let i = 0; i < 10; i++) {
+        createFallingHeart();
+      }
+      
+      // Handle user interaction to enable audio
+      document.body.addEventListener('click', function() {
+        audio.play().catch(e => console.log('Audio play failed:', e));
+      }, { once: true });
+    });
+  </script>
+</body>
+</html>
